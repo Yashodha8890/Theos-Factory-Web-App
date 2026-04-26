@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+.env
+.env.local
+dist/
+build/
+*.log
+
+# Generated project handoff docs
+DELIVERY_SUMMARY.md
+PROJECT_CHECKLIST.md
+QUICK_START.md
+SETUP_INSTRUCTIONS.md

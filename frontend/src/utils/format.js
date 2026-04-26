@@ -1,0 +1,22 @@
+export const formatDate = (value) => {
+  if (!value) return 'Not scheduled';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit', year: 'numeric' }).format(date);
+};
+
+export const formatCurrency = (value) => (
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value || 0))
+);
+
+export const getErrorMessage = (error, fallback = 'Something went wrong') => (
+  error?.response?.data?.message || error?.message || fallback
+);
+
+export const splitName = (name = '') => {
+  const parts = name.trim().split(' ').filter(Boolean);
+  return {
+    firstName: parts[0] || '',
+    lastName: parts.slice(1).join(' '),
+  };
+};
