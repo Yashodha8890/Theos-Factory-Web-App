@@ -52,16 +52,16 @@ const DashboardOverview = () => {
         <img src={images.hero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-r from-brand-950 via-brand-950/85 to-brand-950/55" />
         <div className="relative max-w-3xl">
-          <p className="eyebrow">Client Portal</p>
+          <p className="eyebrow">Customer Dashboard</p>
           <h1 className="display mt-4 text-5xl font-bold italic leading-tight md:text-7xl">
             Welcome back, {user?.name?.split(' ')[0] || 'Guest'}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-            Your curation pipeline is active. Review upcoming milestones, active rental configurations, and quotation progress below.
+            Your event planning workspace is active. Review upcoming appointments, rental bookings, and quotation progress below.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/request-quotation" className="btn-accent">Request New Event <ArrowRight size={16} /></Link>
-            <Link to="/gallery" className="btn-outline border-white/20 text-white hover:bg-white hover:text-brand-950">View Portfolio</Link>
+            <Link to="/gallery" className="btn-outline border-white/20 text-white hover:bg-white hover:text-brand-950">View Gallery</Link>
           </div>
         </div>
       </section>
@@ -69,7 +69,7 @@ const DashboardOverview = () => {
       <section className="grid gap-4 md:grid-cols-3 md:gap-5">
         <SummaryCard title="Next Consultation" value={nextAppointment ? formatDate(nextAppointment.preferredDate).slice(0, 6) : '--'} icon={<CalendarDays size={22} />} caption={nextAppointment ? `${nextAppointment.preferredTime} · ${nextAppointment.serviceType}` : 'No appointment scheduled'} />
         <SummaryCard title="Pending Proposals" value={quotations.length.toString().padStart(2, '0')} icon={<FileText size={22} />} tone="blue" caption={activeQuote ? `${activeQuote.status} · ${activeQuote.eventType}` : 'No quotation activity'} />
-        <SummaryCard title="Active Rentals" value={rentals.length.toString().padStart(2, '0')} icon={<ShoppingBag size={22} />} caption={activeRental ? `${activeRental.status} · ${activeRental.itemId?.name}` : 'No active rental curation'} />
+        <SummaryCard title="Active Rentals" value={rentals.length.toString().padStart(2, '0')} icon={<ShoppingBag size={22} />} caption={activeRental ? `${activeRental.status} · ${activeRental.itemId?.name}` : 'No active rental booking'} />
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.45fr_0.75fr]">
@@ -77,7 +77,7 @@ const DashboardOverview = () => {
           <img src={activeRental?.itemId?.image || images.lounge} alt="" className="absolute inset-y-0 right-0 hidden h-full w-2/5 object-cover opacity-35 md:block" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#07101d] via-[#07101d]/90 to-[#07101d]/70" />
           <div className="relative max-w-xl">
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400">Active Rental Curation</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400">Active Rental Booking</p>
             <h2 className="display mt-6 text-3xl font-bold italic md:text-4xl">
               {activeRental?.itemId?.name || 'No active rental set'}
             </h2>
@@ -114,10 +114,10 @@ const DashboardOverview = () => {
       <section className="space-y-6">
         <div className="flex flex-col gap-4 border-b border-white/10 pb-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Curation Vault</p>
-            <h2 className="display mt-3 text-4xl font-bold italic md:text-5xl">The Event Library</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Event Resources</p>
+            <h2 className="display mt-3 text-4xl font-bold italic md:text-5xl">Planning & Service Library</h2>
           </div>
-          <Link to="/gallery" className="text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-white">Explore all resources</Link>
+          <Link to="/gallery" className="text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-white">Explore Gallery</Link>
         </div>
 
         {appointments.length || quotations.length || rentals.length ? (

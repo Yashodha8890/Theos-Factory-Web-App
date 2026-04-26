@@ -15,7 +15,7 @@ const navClass = ({ isActive }) => (
   `text-sm transition ${isActive ? 'text-accent-600 underline underline-offset-8' : 'muted hover:text-accent-600'}`
 );
 
-const Navbar = () => {
+const Navbar = ({ showDashboardLink = true }) => {
   const { user, theme, toggleTheme, loading } = useAuth();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const Navbar = () => {
             </NavLink>
           ))}
           <NavLink to="/rentals" className={navClass}>Rentals</NavLink>
-          {!loading && user && <NavLink to="/dashboard" className={navClass}>Dashboard</NavLink>}
+          {showDashboardLink && !loading && user && <NavLink to="/dashboard" className={navClass}>Dashboard</NavLink>}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -69,17 +69,21 @@ const Navbar = () => {
                 {item.label}
               </NavLink>
             ))}
-            {!loading && user && <NavLink to="/dashboard" onClick={() => setOpen(false)} className={navClass}>Dashboard</NavLink>}
+            {showDashboardLink && !loading && user && <NavLink to="/dashboard" onClick={() => setOpen(false)} className={navClass}>Dashboard</NavLink>}
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <button type="button" onClick={toggleTheme} className="btn-outline">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className={`btn-outline ${!loading && user && !showDashboardLink ? 'col-span-2' : ''}`}
+              >
                 {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
                 {theme === 'dark' ? 'Day' : 'Night'}
               </button>
               {!loading && !user ? (
                 <button type="button" onClick={() => navigate('/signin')} className="btn-outline">Sign In</button>
-              ) : (
+              ) : showDashboardLink ? (
                 <button type="button" onClick={() => navigate('/dashboard')} className="btn-outline">Portal</button>
-              )}
+              ) : null}
               <button type="button" onClick={() => navigate('/book-appointment')} className="btn-accent col-span-2">Book Now</button>
             </div>
           </div>
