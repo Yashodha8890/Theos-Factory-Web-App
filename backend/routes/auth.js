@@ -54,6 +54,25 @@ router.post('/login', async (req, res) => {
   res.json({ token, user: buildUserResponse(user) });
 });
 
+router.post('/admin/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and security key are required' });
+  }
+
+  const user = await User.findOne({ email: email.toLowerCase() });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ message: 'Invalid admin credentials' });
+  }
+
+  if (user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access is restricted to authorized personnel' });
+  }
+
+  const token = signToken(user);
+  res.json({ token, user: buildUserResponse(user) });
+});
+
 router.get('/me', auth, async (req, res) => {
   res.json(req.user);
 });

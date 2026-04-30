@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import PublicLayout from './components/PublicLayout';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 import DashboardLayout from './components/DashboardLayout';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -21,6 +22,9 @@ import QuotationsRequested from './pages/dashboard/QuotationsRequested';
 import ProfileDetails from './pages/dashboard/ProfileDetails';
 import DeleteAccount from './pages/dashboard/DeleteAccount';
 import Logout from './pages/dashboard/Logout';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminInventory from './pages/admin/AdminInventory';
 
 const withPublic = (element) => <PublicLayout>{element}</PublicLayout>;
 
@@ -28,6 +32,12 @@ const withDashboard = (element, title) => (
   <ProtectedRoute>
     <DashboardLayout title={title}>{element}</DashboardLayout>
   </ProtectedRoute>
+);
+
+const withAdmin = (element) => (
+  <AdminProtectedRoute>
+    {element}
+  </AdminProtectedRoute>
 );
 
 function App() {
@@ -44,6 +54,9 @@ function App() {
       <Route path="/request-quotation" element={withPublic(<RequestQuotation />)} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<Signin />} />
+      <Route path="/admin" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={withAdmin(<AdminDashboard />)} />
+      <Route path="/admin/dashboard/inventory" element={withAdmin(<AdminInventory />)} />
       <Route path="/dashboard" element={withDashboard(<DashboardOverview />, 'Overview')} />
       <Route path="/dashboard/profile" element={withDashboard(<MyProfile />, 'My Profile')} />
       <Route path="/dashboard/appointments" element={withDashboard(<AppointmentDetails />, 'My Appointments')} />

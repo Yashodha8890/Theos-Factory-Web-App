@@ -1,6 +1,6 @@
 # Theo's Factory Web App
 
-Full-stack event services application for guest browsing and logged-in customer workflows. This phase intentionally excludes admin dashboard/backend features.
+Full-stack event services application for guest browsing, logged-in customer workflows, and a separated admin entry point.
 
 ## Stack
 
@@ -12,10 +12,12 @@ Full-stack event services application for guest browsing and logged-in customer 
 
 - Public pages: Home, About, Services, Decoration, Planning, Rental Items, Gallery, Contact, Book Appointment, Request Quotation, Sign Up, Sign In
 - User pages: Dashboard Overview, My Profile, Appointment Details, Rented Items, Quotations Requested, Profile Details, Delete Account, Logout
+- Admin pages: `/admin` admin login, `/admin/dashboard` overview, and `/admin/dashboard/inventory` rental inventory management
 - JWT sign up/sign in flow with protected routes
+- Admin-only JWT login with role checks
 - Appointment booking, quotation requests, rental booking, profile update, and delete account flow
 - Day/night mode persisted in localStorage
-- Seed data for services, gallery, rental items, demo user, and demo customer records
+- Seed data for services, gallery, rental items, demo user, demo admin, and demo customer records
 
 
 ## Project Structure
@@ -91,11 +93,20 @@ npm run dev
 Frontend: `http://localhost:5173`  
 Backend API: `http://localhost:5001/api`
 
+Demo customer: `avery@theosfactory.com` / `DemoPass123`<br>
+Demo admin: `admin@theosfactory.com` / `AdminPass123`
+
 ## API Routes
 
 - `POST /api/auth/signup`
 - `POST /api/auth/login`
+- `POST /api/auth/admin/login`
 - `GET /api/auth/me`
+- `GET /api/admin/overview`
+- `GET /api/admin/inventory`
+- `POST /api/admin/inventory`
+- `PATCH /api/admin/inventory/:id`
+- `DELETE /api/admin/inventory/:id`
 - `GET /api/services`
 - `GET /api/services/:slug`
 - `GET /api/gallery`
@@ -109,9 +120,3 @@ Backend API: `http://localhost:5001/api`
 - `GET /api/users/me`
 - `PATCH /api/users/me`
 - `DELETE /api/users/me`
-
-## Notes
-
-- Port `5001` is used because port `5000` is commonly occupied on macOS.
-- The Facebook page was not directly fetchable from this environment, so the supplied UI screenshots were used as the primary design source and matching public event imagery is referenced from seed/app data.
-- Admin routes and admin UI are intentionally not included in this phase.

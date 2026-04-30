@@ -1,10 +1,10 @@
-import { ArrowRight, Facebook, Instagram, Mail, Share2 } from 'lucide-react';
+import { Facebook, Instagram, Mail, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { company } from '../data/siteData';
 
 const Footer = () => (
   <footer className="bg-brand-950 text-slate-300">
-    <div className="container-page grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+    <div className="container-page grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
       <div>
         <p className="display text-xl font-bold tracking-[0.16em] text-white">{company.name}</p>
         <p className="mt-5 max-w-sm text-sm leading-7 text-slate-400">
@@ -49,17 +49,6 @@ const Footer = () => (
           <Link to="/rentals">Rental Items</Link>
           <Link to="/request-quotation">Request Quotation</Link>
         </div>
-      </div>
-
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.25em] text-accent-400">Newsletter</p>
-        <p className="mt-5 text-sm text-slate-400">Receive curated event ideas and collection updates.</p>
-        <form className="mt-5 flex overflow-hidden rounded-md border border-white/10 bg-white/5">
-          <input className="border-0 bg-transparent text-white placeholder:text-slate-500 focus-visible:ring-0" placeholder="Email address" type="email" />
-          <button className="grid w-12 place-items-center bg-accent-500 text-brand-950" type="submit" aria-label="Subscribe">
-            <ArrowRight size={18} />
-          </button>
-        </form>
       </div>
     </div>
     <div className="border-t border-white/10">

@@ -131,6 +131,14 @@ module.exports = {
     phone: '041 5705471',
     avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=Avery',
   },
+  adminUser: {
+    name: 'Theo Admin',
+    email: 'admin@theosfactory.com',
+    password: 'AdminPass123',
+    phone: '041 5705471',
+    role: 'admin',
+    avatar: 'https://api.dicebear.com/8.x/initials/svg?seed=TF',
+  },
   demoRecords: {
     appointments: [
       {

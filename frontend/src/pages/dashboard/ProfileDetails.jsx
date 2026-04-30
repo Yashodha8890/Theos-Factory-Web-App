@@ -84,10 +84,6 @@ const ProfileDetails = () => {
               <span><strong>SMS Notifications</strong><span className="block text-sm muted">Real-time event updates</span></span>
               <input type="checkbox" defaultChecked className="h-6 w-11 rounded-full p-0" />
             </label>
-            <label className="mt-6 flex items-center justify-between">
-              <span><strong>Newsletter</strong><span className="block text-sm muted">Luxury venue showcases</span></span>
-              <input type="checkbox" className="h-6 w-11 rounded-full p-0" />
-            </label>
           </article>
         </aside>
       </section>
