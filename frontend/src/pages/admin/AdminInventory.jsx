@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
   Archive,
-  Bell,
   CalendarDays,
   CheckCircle2,
   ChevronDown,
@@ -13,12 +12,14 @@ import {
   HelpCircle,
   ImageIcon,
   ImagePlus,
+  Images,
   LogOut,
   Mail,
   Package,
   Plus,
   Search,
   Settings,
+  ShoppingCart,
   Trash2,
   Users,
   X,
@@ -26,9 +27,11 @@ import {
 import {
   createAdminInventoryItem,
   deleteAdminInventoryItem,
+  getAdminOverview,
   getAdminInventory,
   updateAdminInventoryItem,
 } from '../../api/admin';
+import AdminNotificationBell from '../../components/AdminNotificationBell';
 import Modal from '../../components/Modal';
 import { company } from '../../data/siteData';
 import { formatCurrency, getErrorMessage } from '../../utils/format';
@@ -36,9 +39,11 @@ import { formatCurrency, getErrorMessage } from '../../utils/format';
 const sidebarItems = [
   { label: 'Dashboard', icon: Grid2X2, path: '/admin/dashboard' },
   { label: 'Rental Inventory', icon: Package, path: '/admin/dashboard/inventory', active: true },
-  { label: 'Appointments', icon: CalendarDays },
+  { label: 'Inventory Orders', icon: ShoppingCart, path: '/admin/dashboard/orders' },
+  { label: 'Manage Gallery', icon: Images, path: '/admin/dashboard/gallery' },
+  { label: 'Appointments', icon: CalendarDays, path: '/admin/dashboard/bookings' },
   { label: 'Quotations', icon: FileText },
-  { label: 'User Accounts', icon: Users },
+  { label: 'User Accounts', icon: Users, path: '/admin/dashboard/users' },
 ];
 
 const statusOptions = ['All', 'Available', 'Low Stock', 'Rented', 'Unavailable'];
@@ -81,6 +86,8 @@ const AdminInventory = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationBookings, setNotificationBookings] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
   const [form, setForm] = useState(blankForm);
@@ -119,10 +126,24 @@ const AdminInventory = () => {
     }
   };
 
+  const loadNotifications = async () => {
+    try {
+      const data = await getAdminOverview(token);
+      setNotificationCount(data.counts?.rentalBookingNotifications || 0);
+      setNotificationBookings(data.latestRentalBookings || []);
+    } catch (err) {
+      handleAuthError(err, 'Unable to load rental notifications');
+    }
+  };
+
   useEffect(() => {
     const timeout = window.setTimeout(loadInventory, search ? 220 : 0);
     return () => window.clearTimeout(timeout);
   }, [search, category, status]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('theos_admin_token');
@@ -251,7 +272,7 @@ const AdminInventory = () => {
             <p className="mt-2 text-xs uppercase tracking-[0.16em] text-slate-500">Management Suite</p>
           </div>
 
-          <nav className="grid gap-1 px-4 py-2 sm:grid-cols-5 lg:block lg:flex-1 lg:space-y-2">
+          <nav className="grid gap-1 px-4 py-2 sm:grid-cols-7 lg:block lg:flex-1 lg:space-y-2">
             {sidebarItems.map(({ label, icon: Icon, path, active }) => (
               <button
                 key={label}
@@ -302,15 +323,11 @@ const AdminInventory = () => {
               />
             </label>
             <div className="flex items-center justify-between gap-3 md:justify-end">
-              <button type="button" onClick={openCreate} className="btn-accent rounded-full px-6 py-2.5">
-                <Plus size={16} /> New Item
-              </button>
-              <button type="button" className="grid h-10 w-10 place-items-center rounded-full text-slate-600 hover:bg-slate-100" aria-label="Notifications">
-                <Bell size={19} />
-              </button>
-              <button type="button" className="grid h-10 w-10 place-items-center rounded-full text-slate-600 hover:bg-slate-100" aria-label="Messages">
-                <Mail size={19} />
-              </button>
+              <AdminNotificationBell
+                count={notificationCount}
+                bookings={notificationBookings}
+                onViewAll={() => navigate('/admin/dashboard#rental-booking-notifications')}
+              />
               <button type="button" onClick={handleLogout} className="grid h-10 w-10 place-items-center rounded-full bg-accent-100 text-sm font-bold text-accent-700 ring-2 ring-white" aria-label="Admin account">
                 {adminUser?.name?.[0] || 'A'}
               </button>

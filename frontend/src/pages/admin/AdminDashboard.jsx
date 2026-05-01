@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Bell,
+  AlertCircle,
+  ArrowRight,
   CalendarDays,
-  CreditCard,
   FileText,
   Grid2X2,
   HelpCircle,
+  Images,
   LogOut,
   Mail,
-  MessageSquare,
   Package,
   Search,
   Settings,
@@ -18,18 +18,44 @@ import {
   Users,
 } from 'lucide-react';
 import { getAdminOverview } from '../../api/admin';
+import AdminNotificationBell from '../../components/AdminNotificationBell';
 import { company } from '../../data/siteData';
 import { formatDate, getErrorMessage } from '../../utils/format';
 
 const sidebarItems = [
   { label: 'Dashboard', icon: Grid2X2, path: '/admin/dashboard', active: true },
   { label: 'Rental Inventory', icon: Package, path: '/admin/dashboard/inventory' },
-  { label: 'Appointments', icon: CalendarDays },
+  { label: 'Inventory Orders', icon: ShoppingCart, path: '/admin/dashboard/orders' },
+  { label: 'Manage Gallery', icon: Images, path: '/admin/dashboard/gallery' },
+  { label: 'Appointments', icon: CalendarDays, path: '/admin/dashboard/bookings' },
   { label: 'Quotations', icon: FileText },
-  { label: 'User Accounts', icon: Users },
+  { label: 'User Accounts', icon: Users, path: '/admin/dashboard/users' },
 ];
 
-const volumeBars = [38, 62, 48, 82, 67, 43];
+const formatDashboardNumber = (value) => new Intl.NumberFormat('en-US').format(value ?? 0);
+const OVERVIEW_REFRESH_MS = 30000;
+
+const formatActivityTime = (value) => {
+  if (!value) return 'Just now';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Just now';
+
+  const diffMs = Date.now() - date.getTime();
+  if (diffMs < 60000) return 'Just now';
+
+  const diffMinutes = Math.floor(diffMs / 60000);
+  if (diffMinutes < 60) return `${diffMinutes} min ago`;
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours} hr ago`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays} days ago`;
+
+  return formatDate(value);
+};
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -46,24 +72,36 @@ const AdminDashboard = () => {
   }, []);
 
   useEffect(() => {
-    const loadOverview = async () => {
+    let isMounted = true;
+
+    const loadOverview = async (silent = false) => {
       try {
+        if (!silent) setLoading(true);
         const token = localStorage.getItem('theos_admin_token');
         const data = await getAdminOverview(token);
+        if (!isMounted) return;
         setOverview(data);
+        setError('');
       } catch (err) {
-        setError(getErrorMessage(err, 'Unable to load admin overview'));
+        if (!isMounted) return;
+        if (!silent) setError(getErrorMessage(err, 'Unable to load admin overview'));
         if (err?.response?.status === 401 || err?.response?.status === 403) {
           localStorage.removeItem('theos_admin_token');
           localStorage.removeItem('theos_admin_user');
           navigate('/admin', { replace: true });
         }
       } finally {
-        setLoading(false);
+        if (isMounted && !silent) setLoading(false);
       }
     };
 
     loadOverview();
+    const refreshTimer = window.setInterval(() => loadOverview(true), OVERVIEW_REFRESH_MS);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(refreshTimer);
+    };
   }, [navigate]);
 
   const handleLogout = () => {
@@ -73,16 +111,43 @@ const AdminDashboard = () => {
     navigate('/admin');
   };
 
+  const scrollToRentalNotifications = () => {
+    document.getElementById('rental-booking-notifications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  useEffect(() => {
+    if (!loading && window.location.hash === '#rental-booking-notifications') {
+      window.setTimeout(scrollToRentalNotifications, 0);
+    }
+  }, [loading]);
+
   const counts = overview?.counts || {};
   const appointments = overview?.latestAppointments || [];
   const quotations = overview?.latestQuotations || [];
+  const rentalBookings = overview?.latestRentalBookings || [];
+  const users = overview?.latestUsers || [];
+  const rentalNotificationCount = counts.rentalBookingNotifications ?? 0;
+  const rentalCount = counts.activeRentalBookings ?? counts.rentalBookings ?? 0;
 
   const stats = [
     ['TOTAL USERS', counts.users ?? 0, Users, '+12%', 'bg-emerald-50 text-emerald-600'],
     ['QUOTATION REQUESTS', counts.quotations ?? 0, FileText, 'Pending', 'bg-amber-50 text-amber-600'],
     ['APPOINTMENTS', counts.appointments ?? 0, CalendarDays, 'Today', 'bg-slate-100 text-slate-500'],
-    ['ACTIVE RENTALS', counts.rentalBookings ?? 0, Package, 'Live', 'bg-emerald-50 text-emerald-600'],
+    [
+      'ACTIVE RENTALS',
+      rentalCount,
+      Package,
+      rentalNotificationCount ? `${rentalNotificationCount} new` : 'Live',
+      rentalNotificationCount ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600',
+    ],
   ];
+  const volumeData = [
+    { label: 'Users', chartLabel: 'Users', value: counts.users ?? 0, color: 'bg-slate-950', tint: 'bg-slate-100', text: 'text-slate-950' },
+    { label: 'Quotation Requests', chartLabel: 'Quotes', value: counts.quotations ?? 0, color: 'bg-accent-600', tint: 'bg-accent-50', text: 'text-accent-700' },
+    { label: 'Appointments', chartLabel: 'Appoint', value: counts.appointments ?? 0, color: 'bg-blue-600', tint: 'bg-blue-50', text: 'text-blue-700' },
+    { label: 'Rentals', chartLabel: 'Rentals', value: rentalCount, color: 'bg-emerald-600', tint: 'bg-emerald-50', text: 'text-emerald-700' },
+  ];
+  const highestVolume = Math.max(...volumeData.map((item) => item.value), 1);
 
   return (
     <div className="min-h-screen bg-[#faf8f8] text-[#171717] lg:grid lg:grid-cols-[280px_1fr]">
@@ -93,7 +158,7 @@ const AdminDashboard = () => {
             <p className="mt-2 text-xs uppercase tracking-[0.16em] text-slate-500">Management Suite</p>
           </div>
 
-          <nav className="grid gap-1 px-4 py-2 sm:grid-cols-5 lg:block lg:flex-1 lg:space-y-2">
+          <nav className="grid gap-1 px-4 py-2 sm:grid-cols-7 lg:block lg:flex-1 lg:space-y-2">
             {sidebarItems.map(({ label, icon: Icon, path, active }) => (
               <button
                 key={label}
@@ -142,12 +207,7 @@ const AdminDashboard = () => {
               />
             </label>
             <div className="flex items-center justify-between gap-3 md:justify-end">
-              <button type="button" onClick={() => navigate('/book-appointment')} className="btn-accent rounded-full px-6 py-2.5">
-                New Booking
-              </button>
-              <button type="button" className="grid h-10 w-10 place-items-center rounded-full text-slate-600 hover:bg-slate-100" aria-label="Notifications">
-                <Bell size={19} />
-              </button>
+              <AdminNotificationBell count={rentalNotificationCount} bookings={rentalBookings} onViewAll={scrollToRentalNotifications} />
               <button type="button" className="grid h-10 w-10 place-items-center rounded-full text-slate-600 hover:bg-slate-100" aria-label="Messages">
                 <Mail size={19} />
               </button>
@@ -189,28 +249,70 @@ const AdminDashboard = () => {
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
                       <h2 className="display text-2xl font-bold">Request Volume</h2>
-                      <p className="mt-1 text-sm text-slate-600">Historical quotation trends over the last 30 days.</p>
+                      <p className="mt-1 text-sm text-slate-600">Users, quotation requests, appointments, and rentals shown as live admin totals.</p>
                     </div>
                     <button type="button" className="rounded-lg bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-600">Last 30 Days</button>
                   </div>
-                  <div className="mt-9 flex h-72 items-end gap-6 border-y border-slate-100 px-4 py-8">
-                    {volumeBars.map((height, index) => (
-                      <div key={height + index} className="flex flex-1 items-end">
-                        <div
-                          className={`w-full rounded-t-lg ${index === 3 ? 'bg-accent-600' : index === 4 ? 'bg-amber-300' : 'bg-amber-100'}`}
-                          style={{ height: `${height}%` }}
-                        />
+                  <div className="mt-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+                    <div className="rounded-lg border border-slate-100 bg-slate-50/70 px-5 pb-5 pt-7">
+                      <div className="relative flex h-72 items-end gap-4 border-b border-slate-200 px-2">
+                        <div className="pointer-events-none absolute inset-x-2 top-0 h-px bg-slate-200" />
+                        <div className="pointer-events-none absolute inset-x-2 top-1/3 h-px bg-slate-200/80" />
+                        <div className="pointer-events-none absolute inset-x-2 top-2/3 h-px bg-slate-200/80" />
+                        {volumeData.map((item) => {
+                          const percentage = Math.round((item.value / highestVolume) * 100);
+                          const barHeight = item.value ? Math.max(percentage, 12) : 2;
+
+                          return (
+                            <div key={item.label} className="relative z-10 flex h-full flex-1 flex-col items-center justify-end gap-3">
+                              <div className="rounded bg-white px-2 py-1 text-xs font-bold text-slate-700 shadow-sm">
+                                {formatDashboardNumber(item.value)}
+                              </div>
+                              <div className="flex h-full w-full max-w-[76px] items-end">
+                                <div className={`w-full rounded-t-lg ${item.color} shadow-sm`} style={{ height: `${barHeight}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
+                      <div className="mt-4 grid grid-cols-4 gap-2 text-center text-[10px] font-bold uppercase leading-4 tracking-[0.08em] text-slate-500 sm:text-[11px] sm:tracking-[0.1em]">
+                        {volumeData.map((item) => (
+                          <span key={item.label} className="min-w-0 whitespace-normal break-words px-1">{item.chartLabel}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {volumeData.map((item) => {
+                        const percentage = Math.round((item.value / highestVolume) * 100);
+
+                        return (
+                          <div key={item.label} className={`rounded-lg p-4 ${item.tint}`}>
+                            <div>
+                              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
+                              <p className={`display mt-1 text-3xl font-bold ${item.text}`}>{formatDashboardNumber(item.value)}</p>
+                            </div>
+                            <div className="mt-4 h-2 rounded-full bg-white">
+                              <div className={`h-full rounded-full ${item.color}`} style={{ width: `${percentage}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </article>
 
-                <RecentActivity appointments={appointments} quotations={quotations} />
+                <RecentActivity appointments={appointments} quotations={quotations} rentalBookings={rentalBookings} users={users} />
               </section>
 
-              <section className="mt-8 grid gap-8 xl:grid-cols-[1fr_320px]">
+              <RentalBookingNotifications
+                bookings={rentalBookings}
+                count={rentalNotificationCount}
+                onManageInventory={() => navigate('/admin/dashboard/orders')}
+              />
+
+              <section className="mt-8">
                 <UpcomingAppointments appointments={appointments} />
-                <SystemHealth />
               </section>
             </>
           )}
@@ -220,56 +322,155 @@ const AdminDashboard = () => {
   );
 };
 
-const RecentActivity = ({ appointments, quotations }) => {
+const RecentActivity = ({ appointments, quotations, rentalBookings, users }) => {
   const activities = [
-    {
-      icon: ShoppingCart,
+    ...appointments.map((appointment) => ({
+      id: `appointment-${appointment._id}`,
+      icon: CalendarDays,
       tone: 'bg-amber-50 text-accent-600',
-      title: appointments[0] ? `New booking: ${appointments[0].serviceType}` : 'New booking: Event consultation',
-      meta: appointments[0] ? `${formatDate(appointments[0].preferredDate)} · ${appointments[0].userId?.name || 'Client'}` : 'Awaiting scheduling activity',
-    },
-    {
-      icon: CreditCard,
-      tone: 'bg-emerald-50 text-emerald-600',
-      title: 'Payment received',
-      meta: 'Invoice activity will appear here',
-    },
-    {
-      icon: MessageSquare,
+      title: `Appointment: ${appointment.serviceType || 'Event consultation'}`,
+      meta: `${appointment.userId?.name || 'Client'} · ${formatDate(appointment.preferredDate)} · ${appointment.status || 'Pending'}`,
+      createdAt: appointment.createdAt,
+    })),
+    ...quotations.map((quotation) => ({
+      id: `quotation-${quotation._id}`,
+      icon: FileText,
       tone: 'bg-blue-50 text-blue-600',
-      title: quotations[0] ? `Quote from ${quotations[0].eventType}` : 'Message from client',
-      meta: quotations[0] ? `${quotations[0].status} · ${quotations[0].userId?.name || 'Client'}` : 'No quote messages yet',
-    },
-    {
+      title: `Quotation: ${quotation.eventType || quotation.serviceCategory || 'Event request'}`,
+      meta: `${quotation.userId?.name || 'Client'} · ${quotation.status || 'Pending Review'} · ${quotation.guestCount || 'Guest count pending'}`,
+      createdAt: quotation.createdAt,
+    })),
+    ...rentalBookings.map((booking) => ({
+      id: `rental-${booking._id}`,
+      icon: Package,
+      tone: 'bg-emerald-50 text-emerald-600',
+      title: `Rental request: ${booking.itemId?.name || 'Rental item'}`,
+      meta: `${booking.userId?.name || 'Client'} · Qty ${booking.quantity || 1} · ${booking.status || 'Reserved'}`,
+      createdAt: booking.createdAt,
+    })),
+    ...users.map((user) => ({
+      id: `user-${user._id}`,
       icon: UserPlus,
-      tone: 'bg-slate-100 text-slate-500',
-      title: 'New user registration',
-      meta: 'Customer accounts are synced',
-    },
-  ];
+      tone: 'bg-slate-100 text-slate-600',
+      title: `New user: ${user.name || 'Customer account'}`,
+      meta: user.email || user.phone || 'Customer account created',
+      createdAt: user.createdAt,
+    })),
+  ]
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+    .slice(0, 6);
 
   return (
     <article className="rounded-lg bg-white p-6 shadow-soft">
       <div className="flex items-center justify-between gap-4">
         <h2 className="display text-2xl font-bold">Recent Activity</h2>
-        <button type="button" className="text-xs font-bold text-accent-600">View All</button>
+        <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          Live
+        </span>
       </div>
       <div className="mt-6 space-y-6">
-        {activities.map(({ icon: Icon, tone, title, meta }) => (
-          <div key={title} className="flex gap-4">
+        {activities.map(({ id, icon: Icon, tone, title, meta, createdAt }) => (
+          <div key={id} className="flex gap-4">
             <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-full ${tone}`}>
               <Icon size={18} />
             </div>
-            <div>
-              <p className="text-sm font-bold text-slate-950">{title}</p>
-              <p className="mt-1 text-xs text-slate-500">{meta}</p>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-sm font-bold text-slate-950">{title}</p>
+                <span className="shrink-0 text-[11px] font-semibold text-slate-400">{formatActivityTime(createdAt)}</span>
+              </div>
+              <p className="mt-1 truncate text-xs text-slate-500">{meta}</p>
             </div>
           </div>
         ))}
+
+        {!activities.length && (
+          <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+            <p className="text-sm font-bold text-slate-950">No recent activity yet</p>
+            <p className="mt-2 text-xs text-slate-500">New bookings, quotes, rentals, and user registrations will appear here automatically.</p>
+          </div>
+        )}
       </div>
     </article>
   );
 };
+
+const RentalBookingNotifications = ({ bookings, count, onManageInventory }) => (
+  <section id="rental-booking-notifications" className="mt-8 scroll-mt-24 rounded-lg bg-white p-6 shadow-soft">
+    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div>
+        <div className="flex items-center gap-3">
+          <span className="grid h-11 w-11 place-items-center rounded-lg bg-red-50 text-red-600">
+            <AlertCircle size={20} />
+          </span>
+          <div>
+            <h2 className="display text-2xl font-bold">Rental Booking Notifications</h2>
+            <p className="mt-1 text-sm text-slate-600">User-submitted rental inventory requests that need admin review.</p>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] ${count ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
+          {count ? `${count} new` : 'No new requests'}
+        </span>
+        <button type="button" onClick={onManageInventory} className="btn-outline py-2 text-sm">
+          Inventory <ArrowRight size={16} />
+        </button>
+      </div>
+    </div>
+
+    <div className="mt-6 grid gap-4 xl:grid-cols-2">
+      {bookings.map((booking) => (
+        <article key={booking._id} className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+          <div className="flex gap-4">
+            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-lg bg-white text-slate-400">
+              {booking.itemId?.image ? (
+                <img src={booking.itemId.image} alt={booking.itemId?.name || 'Rental item'} className="h-full w-full object-cover" />
+              ) : (
+                <Package size={22} />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <p className="display text-xl font-bold leading-tight text-slate-950">{booking.itemId?.name || 'Rental item'}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">
+                    {booking.itemId?.category || 'Rental'} · Qty {booking.quantity}
+                  </p>
+                </div>
+                <span className="w-fit rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-amber-700">
+                  {booking.status}
+                </span>
+              </div>
+
+              <div className="mt-4 grid gap-3 text-sm text-slate-600 md:grid-cols-2">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Client</p>
+                  <p className="mt-1 font-semibold text-slate-950">{booking.userId?.name || 'Customer'}</p>
+                  <p className="mt-1 truncate text-xs">{booking.userId?.email || 'Email unavailable'}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Rental Window</p>
+                  <p className="mt-1 font-semibold text-slate-950">{formatDate(booking.startDate)}</p>
+                  <p className="mt-1 text-xs">to {formatDate(booking.endDate)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      ))}
+
+      {!bookings.length && (
+        <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-8 text-center xl:col-span-2">
+          <Package className="mx-auto text-slate-400" size={26} />
+          <p className="mt-4 text-sm font-bold text-slate-950">No active rental booking requests</p>
+          <p className="mt-2 text-sm text-slate-500">New customer rental reservations will appear here for quick admin review.</p>
+        </div>
+      )}
+    </div>
+  </section>
+);
 
 const UpcomingAppointments = ({ appointments }) => (
   <article className="overflow-hidden rounded-lg bg-white p-6 shadow-soft">
@@ -315,32 +516,6 @@ const UpcomingAppointments = ({ appointments }) => (
       </table>
     </div>
   </article>
-);
-
-const SystemHealth = () => (
-  <article className="rounded-lg bg-[#0b1728] p-6 text-white shadow-lift">
-    <h2 className="display text-2xl font-bold text-slate-300">System Health</h2>
-    <p className="mt-2 text-sm text-slate-400">All systems operational across booking, quote, and rental services.</p>
-    <div className="mt-8 space-y-6">
-      <Metric label="Server Load" value="24%" width="24%" color="bg-accent-500" />
-      <Metric label="API Latency" value="42ms" width="15%" color="bg-emerald-500" />
-    </div>
-    <button type="button" className="mt-16 w-full rounded-md bg-white/15 px-5 py-3 text-sm font-bold text-white hover:bg-white/25">
-      Diagnostics
-    </button>
-  </article>
-);
-
-const Metric = ({ label, value, width, color }) => (
-  <div>
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-slate-300">{label}</span>
-      <span className="font-bold text-white">{value}</span>
-    </div>
-    <div className="mt-3 h-1 rounded-full bg-white/15">
-      <div className={`h-full rounded-full ${color}`} style={{ width }} />
-    </div>
-  </div>
 );
 
 export default AdminDashboard;

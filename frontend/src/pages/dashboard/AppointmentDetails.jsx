@@ -39,7 +39,7 @@ const AppointmentDetails = () => {
       ) : (
         <>
           <section className="grid gap-6 xl:grid-cols-[1.4fr_0.65fr]">
-            <article className="card overflow-hidden p-0 md:grid md:grid-cols-[320px_1fr]">
+            <article className="card overflow-hidden p-0 text-slate-950 dark:text-slate-100 md:grid md:grid-cols-[320px_1fr]">
               <img src={images.table} alt="Featured event appointment" className="h-full min-h-[360px] w-full object-cover" />
               <div className="p-8">
                 <span className="status-pill bg-accent-100 text-accent-800">{featured.status}</span>
@@ -61,7 +61,7 @@ const AppointmentDetails = () => {
               </div>
             </article>
 
-            <article className="card p-8">
+            <article className="card p-8 text-slate-950 dark:text-slate-100">
               <span className="grid h-14 w-14 place-items-center rounded-lg bg-accent-100 text-accent-700"><CalendarDays /></span>
               <h2 className="display mt-10 text-4xl font-bold">Next Consultation</h2>
               <div className="mt-8 space-y-4 text-sm">
@@ -73,7 +73,7 @@ const AppointmentDetails = () => {
             </article>
           </section>
 
-          <section className="card overflow-hidden">
+          <section className="card overflow-hidden text-slate-950 dark:text-slate-100">
             <div className="flex items-center justify-between p-6">
               <h2 className="display text-2xl font-bold">Additional Consultations</h2>
               <MoreVertical className="muted" />
@@ -81,7 +81,7 @@ const AppointmentDetails = () => {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] text-left text-sm">
                 <thead style={{ background: 'var(--surface-soft)' }}>
-                  <tr className="muted">
+                  <tr className="text-slate-600 dark:text-slate-300">
                     <th className="px-6 py-4 font-semibold">Service Type</th>
                     <th className="px-6 py-4 font-semibold">Date & Time</th>
                     <th className="px-6 py-4 font-semibold">Status</th>
@@ -91,8 +91,8 @@ const AppointmentDetails = () => {
                 <tbody>
                   {appointments.map((appointment) => (
                     <tr key={appointment._id} className="border-t" style={{ borderColor: 'var(--line)' }}>
-                      <td className="px-6 py-5 font-semibold">{appointment.serviceType}</td>
-                      <td className="px-6 py-5">{formatDate(appointment.preferredDate)} · {appointment.preferredTime}</td>
+                      <td className="px-6 py-5 font-semibold text-slate-950 dark:text-slate-100">{appointment.serviceType}</td>
+                      <td className="px-6 py-5 text-slate-700 dark:text-slate-200">{formatDate(appointment.preferredDate)} · {appointment.preferredTime}</td>
                       <td className="px-6 py-5"><span className="status-pill bg-accent-100 text-accent-800">{appointment.status}</span></td>
                       <td className="px-6 py-5 muted">{appointment.notes || 'No notes'}</td>
                     </tr>

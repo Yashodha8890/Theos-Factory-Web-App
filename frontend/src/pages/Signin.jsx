@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Moon, Sun } from 'lucide-react';
 import FormInput from '../components/FormInput';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +8,6 @@ import { getErrorMessage } from '../utils/format';
 
 const Signin = () => {
   const { signIn, theme, toggleTheme } = useAuth();
-  const [params] = useSearchParams();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: 'avery@theosfactory.com', password: 'DemoPass123' });
   const [error, setError] = useState('');
@@ -25,7 +24,7 @@ const Signin = () => {
     setLoading(true);
     try {
       await signIn(form);
-      navigate(params.get('next') || '/dashboard');
+      navigate('/');
     } catch (err) {
       setError(getErrorMessage(err, 'Sign in failed'));
     } finally {

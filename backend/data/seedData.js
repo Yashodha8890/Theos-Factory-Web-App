@@ -137,6 +137,7 @@ module.exports = {
     password: 'AdminPass123',
     phone: '041 5705471',
     role: 'admin',
+    status: 'Active',
     avatar: 'https://api.dicebear.com/8.x/initials/svg?seed=TF',
   },
   demoRecords: {

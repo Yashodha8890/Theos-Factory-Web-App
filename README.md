@@ -12,7 +12,7 @@ Full-stack event services application for guest browsing, logged-in customer wor
 
 - Public pages: Home, About, Services, Decoration, Planning, Rental Items, Gallery, Contact, Book Appointment, Request Quotation, Sign Up, Sign In
 - User pages: Dashboard Overview, My Profile, Appointment Details, Rented Items, Quotations Requested, Profile Details, Delete Account, Logout
-- Admin pages: `/admin` admin login, `/admin/dashboard` overview, and `/admin/dashboard/inventory` rental inventory management
+- Admin pages: `/admin` admin login, `/admin/dashboard` overview, `/admin/dashboard/bookings` booking management, `/admin/dashboard/inventory` rental inventory management, `/admin/dashboard/orders` inventory order tracking, and `/admin/dashboard/gallery` gallery management
 - JWT sign up/sign in flow with protected routes
 - Admin-only JWT login with role checks
 - Appointment booking, quotation requests, rental booking, profile update, and delete account flow
@@ -107,6 +107,15 @@ Demo admin: `admin@theosfactory.com` / `AdminPass123`
 - `POST /api/admin/inventory`
 - `PATCH /api/admin/inventory/:id`
 - `DELETE /api/admin/inventory/:id`
+- `GET /api/admin/orders`
+- `PATCH /api/admin/orders/:id/status`
+- `GET /api/admin/gallery`
+- `POST /api/admin/gallery`
+- `PATCH /api/admin/gallery/:id`
+- `DELETE /api/admin/gallery/:id`
+- `GET /api/admin/bookings`
+- `PATCH /api/admin/bookings/:id/status`
+- `PATCH /api/admin/bookings/:id/reschedule`
 - `GET /api/services`
 - `GET /api/services/:slug`
 - `GET /api/gallery`

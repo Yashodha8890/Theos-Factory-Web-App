@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Download, ShieldCheck, Trash2, UserRound } from 'lucide-react';
+import { Download, ImagePlus, ShieldCheck, Trash2, UserRound, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import FormInput from '../../components/FormInput';
 import { useAuth } from '../../contexts/AuthContext';
 import { company } from '../../data/siteData';
 import { getErrorMessage, splitName } from '../../utils/format';
+
+const maxAvatarSize = 1.5 * 1024 * 1024;
 
 const ProfileDetails = () => {
   const { user, updateProfile } = useAuth();
@@ -23,6 +25,29 @@ const ProfileDetails = () => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setMessage('');
+  };
+
+  const handleAvatarAttach = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setMessage('Choose a valid image file.');
+      return;
+    }
+    if (file.size > maxAvatarSize) {
+      setMessage('Profile image must be 1.5 MB or smaller.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm((prev) => ({ ...prev, avatar: reader.result }));
+      setMessage('');
+    };
+    reader.onerror = () => setMessage('Unable to read the selected image.');
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (event) => {
@@ -63,7 +88,28 @@ const ProfileDetails = () => {
             <FormInput label="Last Name" name="lastName" value={form.lastName} onChange={handleChange} />
             <FormInput className="md:col-span-2" label="Email Address" value={user?.email || ''} readOnly />
             <FormInput label="Phone Number" name="phone" value={form.phone} onChange={handleChange} placeholder={company.phone} />
-            <FormInput label="Avatar URL" name="avatar" value={form.avatar} onChange={handleChange} placeholder="https://..." />
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs font-bold uppercase tracking-[0.14em] muted">Profile Image</span>
+                {form.avatar && (
+                  <button type="button" onClick={() => setForm((prev) => ({ ...prev, avatar: '' }))} className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700">
+                    <X size={14} /> Remove
+                  </button>
+                )}
+              </div>
+              <div className="mt-3 grid gap-4 rounded-lg border p-4 sm:grid-cols-[112px_1fr] sm:items-center" style={{ borderColor: 'var(--line)', background: 'var(--surface-soft)' }}>
+                <div className="grid h-28 w-28 place-items-center overflow-hidden rounded-full bg-accent-100 text-accent-900">
+                  {form.avatar ? <img src={form.avatar} alt="Profile preview" className="h-full w-full object-cover" /> : <UserRound size={32} />}
+                </div>
+                <div className="space-y-3">
+                  <label className="btn-outline w-fit cursor-pointer bg-white py-2 dark:bg-brand-950">
+                    <ImagePlus size={16} /> Attach Image
+                    <input type="file" accept="image/*" onChange={handleAvatarAttach} className="sr-only" />
+                  </label>
+                  <p className="text-xs leading-5 muted">JPG, PNG, or WebP up to 1.5 MB.</p>
+                </div>
+              </div>
+            </div>
             <FormInput className="md:col-span-2" label="New Password" name="password" type="password" value={form.password} onChange={handleChange} placeholder="Leave blank to keep current password" />
           </div>
           {message && <p className={`mt-6 text-sm font-semibold ${message.includes('success') ? 'text-emerald-600' : 'text-red-500'}`}>{message}</p>}

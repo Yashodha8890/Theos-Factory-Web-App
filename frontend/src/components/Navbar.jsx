@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Menu, Moon, Sun, X } from 'lucide-react';
+import { LogOut, Menu, Moon, Sun, X } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { company } from '../data/siteData';
@@ -16,9 +16,15 @@ const navClass = ({ isActive }) => (
 );
 
 const Navbar = ({ showDashboardLink = true }) => {
-  const { user, theme, toggleTheme, loading } = useAuth();
+  const { user, theme, toggleTheme, loading, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    signOut();
+    setOpen(false);
+    navigate('/');
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--surface) 92%, transparent)', borderColor: 'var(--line)' }}>
@@ -38,6 +44,9 @@ const Navbar = ({ showDashboardLink = true }) => {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <button type="button" onClick={() => navigate('/book-appointment')} className="btn-accent py-2">
+            Book Now
+          </button>
           <button
             type="button"
             onClick={toggleTheme}
@@ -51,9 +60,17 @@ const Navbar = ({ showDashboardLink = true }) => {
               Sign In
             </button>
           )}
-          <button type="button" onClick={() => navigate('/book-appointment')} className="btn-accent py-2">
-            Book Now
-          </button>
+          {!loading && user && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="group grid h-10 w-10 place-items-center rounded-full border border-red-100 bg-red-50 text-red-600 shadow-sm transition hover:border-red-200 hover:bg-red-600 hover:text-white"
+              aria-label="Logout"
+              title="Logout"
+            >
+              <LogOut size={17} className="transition group-hover:-translate-x-0.5" />
+            </button>
+          )}
         </div>
 
         <button type="button" onClick={() => setOpen((value) => !value)} className="btn-outline h-10 w-10 px-0 md:hidden" aria-label="Toggle menu">
@@ -71,6 +88,7 @@ const Navbar = ({ showDashboardLink = true }) => {
             ))}
             {showDashboardLink && !loading && user && <NavLink to="/dashboard" onClick={() => setOpen(false)} className={navClass}>Dashboard</NavLink>}
             <div className="grid grid-cols-2 gap-3 pt-2">
+              <button type="button" onClick={() => navigate('/book-appointment')} className="btn-accent col-span-2">Book Now</button>
               <button
                 type="button"
                 onClick={toggleTheme}
@@ -84,7 +102,11 @@ const Navbar = ({ showDashboardLink = true }) => {
               ) : showDashboardLink ? (
                 <button type="button" onClick={() => navigate('/dashboard')} className="btn-outline">Portal</button>
               ) : null}
-              <button type="button" onClick={() => navigate('/book-appointment')} className="btn-accent col-span-2">Book Now</button>
+              {!loading && user && (
+                <button type="button" onClick={handleLogout} className="btn-outline text-red-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700">
+                  <LogOut size={16} /> Logout
+                </button>
+              )}
             </div>
           </div>
         </div>

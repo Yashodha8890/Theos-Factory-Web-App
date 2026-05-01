@@ -25,6 +25,10 @@ import Logout from './pages/dashboard/Logout';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminInventory from './pages/admin/AdminInventory';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminGallery from './pages/admin/AdminGallery';
+import AdminBookings from './pages/admin/AdminBookings';
+import AdminUsers from './pages/admin/AdminUsers';
 
 const withPublic = (element) => <PublicLayout>{element}</PublicLayout>;
 
@@ -57,6 +61,10 @@ function App() {
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={withAdmin(<AdminDashboard />)} />
       <Route path="/admin/dashboard/inventory" element={withAdmin(<AdminInventory />)} />
+      <Route path="/admin/dashboard/orders" element={withAdmin(<AdminOrders />)} />
+      <Route path="/admin/dashboard/gallery" element={withAdmin(<AdminGallery />)} />
+      <Route path="/admin/dashboard/bookings" element={withAdmin(<AdminBookings />)} />
+      <Route path="/admin/dashboard/users" element={withAdmin(<AdminUsers />)} />
       <Route path="/dashboard" element={withDashboard(<DashboardOverview />, 'Overview')} />
       <Route path="/dashboard/profile" element={withDashboard(<MyProfile />, 'My Profile')} />
       <Route path="/dashboard/appointments" element={withDashboard(<AppointmentDetails />, 'My Appointments')} />
