@@ -7,6 +7,7 @@ import { company } from '../data/siteData';
 const navItems = [
   { label: 'About', to: '/about' },
   { label: 'Services', to: '/services' },
+  { label: 'Appointment', to: '/book-appointment' },
   { label: 'Gallery', to: '/gallery' },
   { label: 'Contact', to: '/contact' },
   { label: 'Quotation', to: '/request-quotation' },
@@ -52,7 +53,7 @@ const Navbar = ({ showDashboardLink = true }) => {
             <img src="/images/logo.png" alt={company.name} className="h-20 w-auto object-contain" />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-6 lg:gap-8 md:flex">
             {navItems.map((item) => (
               <NavLink key={item.to} to={item.to} className={navClass}>
                 {item.label}
