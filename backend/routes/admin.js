@@ -24,6 +24,7 @@ const userRoleLabels = {
 };
 const defaultAdminEmail = 'admin@theosfactory.com';
 const isDefaultAdminUser = (user) => user?.email?.toLowerCase() === defaultAdminEmail;
+const normalizeQuotationStatus = (status) => (status === 'Review' ? 'Pending Review' : status || 'Pending Review');
 
 const normalizeDate = (value) => {
   const date = new Date(value);
@@ -168,7 +169,10 @@ router.get('/overview', async (req, res) => {
       galleryItems,
     },
     latestAppointments,
-    latestQuotations,
+    latestQuotations: latestQuotations.map((quotation) => ({
+      ...quotation,
+      status: normalizeQuotationStatus(quotation.status),
+    })),
     latestRentalBookings,
     latestUsers,
   });
@@ -782,6 +786,119 @@ router.delete('/inventory/:id', async (req, res) => {
 
   await RentalBooking.deleteMany({ itemId: req.params.id });
   res.json({ message: 'Rental item deleted' });
+});
+
+const quotationStatuses = ['Pending Review', 'Approved', 'Rejected', 'Closed'];
+
+const mapQuotation = (quotation) => ({
+  _id: quotation._id,
+  customer: quotation.userId,
+  eventType: quotation.eventType,
+  eventDate: quotation.eventDate,
+  guestCount: quotation.guestCount,
+  budgetRange: quotation.budgetRange,
+  serviceCategory: quotation.serviceCategory,
+  notes: quotation.notes,
+  status: normalizeQuotationStatus(quotation.status),
+  createdAt: quotation.createdAt,
+  updatedAt: quotation.updatedAt,
+});
+
+router.get('/quotations', async (req, res) => {
+  const {
+    search = '',
+    status = 'All',
+    sort = 'recent',
+    page = 1,
+    limit = 10,
+  } = req.query;
+
+  const query = {};
+  if (status && status !== 'All') {
+    query.status = status === 'Pending Review' ? { $in: ['Pending Review', 'Review'] } : status;
+  }
+
+  const trimmedSearch = String(search).trim();
+  if (trimmedSearch) {
+    const searchRegex = new RegExp(trimmedSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    const matchingUsers = await User.find({
+      $or: [
+        { name: searchRegex },
+        { email: searchRegex },
+        { phone: searchRegex },
+      ],
+    }).select('_id').lean();
+
+    query.$or = [
+      { eventType: searchRegex },
+      { serviceCategory: searchRegex },
+      { guestCount: searchRegex },
+      { budgetRange: searchRegex },
+      { notes: searchRegex },
+    ];
+
+    if (matchingUsers.length) {
+      query.$or.push({ userId: { $in: matchingUsers.map((user) => user._id) } });
+    }
+  }
+
+  const pageNumber = Math.max(Number(page) || 1, 1);
+  const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 50);
+  const skip = (pageNumber - 1) * limitNumber;
+  const sortMap = {
+    recent: { createdAt: -1 },
+    oldest: { createdAt: 1 },
+  };
+
+  const [total, quotations, allQuotations] = await Promise.all([
+    Quotation.countDocuments(query),
+    Quotation.find(query)
+      .populate('userId', 'name email phone')
+      .sort(sortMap[sort] || sortMap.recent)
+      .skip(skip)
+      .limit(limitNumber)
+      .lean(),
+    Quotation.find({}).select('status').lean(),
+  ]);
+
+  res.json({
+    quotations: quotations.map(mapQuotation),
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      total,
+      totalPages: Math.max(Math.ceil(total / limitNumber), 1),
+    },
+    stats: {
+      totalQuotations: allQuotations.length,
+      pendingReview: allQuotations.filter((q) => normalizeQuotationStatus(q.status) === 'Pending Review').length,
+      approved: allQuotations.filter((q) => q.status === 'Approved').length,
+      rejected: allQuotations.filter((q) => q.status === 'Rejected').length,
+      closed: allQuotations.filter((q) => q.status === 'Closed').length,
+    },
+  });
+});
+
+router.patch('/quotations/:id/status', async (req, res) => {
+  const { status } = req.body;
+
+  if (!quotationStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid quotation status' });
+  }
+
+  const quotation = await Quotation.findByIdAndUpdate(
+    req.params.id,
+    { status },
+    { new: true, runValidators: true },
+  )
+    .populate('userId', 'name email phone')
+    .lean();
+
+  if (!quotation) {
+    return res.status(404).json({ message: 'Quotation not found' });
+  }
+
+  res.json(mapQuotation(quotation));
 });
 
 module.exports = router;

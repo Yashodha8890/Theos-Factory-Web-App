@@ -48,9 +48,6 @@ const DashboardLayout = ({ children }) => {
       </nav>
 
       <div className="space-y-5 border-t border-white/10 p-4">
-        <button type="button" onClick={() => navigate('/request-quotation')} className="btn-primary w-full rounded-none uppercase tracking-[0.18em]">
-          Request New Event
-        </button>
         <button type="button" onClick={() => navigate('/contact')} className="flex items-center gap-3 px-4 py-2 text-sm text-slate-500 hover:text-white">
           <CircleUserRound size={17} /> Support
         </button>

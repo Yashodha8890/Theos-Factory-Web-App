@@ -34,7 +34,7 @@ const sidebarItems = [
   { label: 'Inventory Orders', icon: ShoppingCart, path: '/admin/dashboard/orders', active: true },
   { label: 'Manage Gallery', icon: Images, path: '/admin/dashboard/gallery' },
   { label: 'Appointments', icon: CalendarDays, path: '/admin/dashboard/bookings' },
-  { label: 'Quotations', icon: FileText },
+  { label: 'Quotations', icon: FileText, path: '/admin/dashboard/quotations' },
   { label: 'User Accounts', icon: Users, path: '/admin/dashboard/users' },
 ];
 
@@ -370,7 +370,7 @@ const AdminOrders = () => {
             </div>
           </section>
 
-          <section className="mt-10 grid gap-8 xl:grid-cols-[1fr_320px]">
+          <section className="mt-10">
             <article className="relative min-h-[300px] overflow-hidden rounded-lg bg-slate-900 p-8 text-white shadow-lift">
               <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, #ffffff 0 2px, transparent 3px), radial-gradient(circle at 70% 40%, #ffffff 0 2px, transparent 3px), radial-gradient(circle at 45% 70%, #ffffff 0 2px, transparent 3px)' }} />
               <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'linear-gradient(115deg, transparent 0 23%, rgba(255,255,255,0.45) 23.2%, transparent 24%), linear-gradient(35deg, transparent 0 48%, rgba(255,255,255,0.35) 48.2%, transparent 49%)' }} />
@@ -382,19 +382,6 @@ const AdminOrders = () => {
                   <p className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" /> {stats?.upcomingReturns || 0} upcoming returns due soon</p>
                 </div>
               </div>
-            </article>
-
-            <article className="rounded-lg bg-[#080d14] p-6 text-white shadow-lift">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Warehouse Capacity</p>
-              <h2 className="display mt-5 text-2xl font-bold">Optimized Floor Space</h2>
-              <div className="mt-8 space-y-6">
-                <Capacity label="Furniture" value={84} />
-                <Capacity label="Lighting & Decor" value={42} />
-                <Capacity label="Tableware" value={68} />
-              </div>
-              <button type="button" onClick={() => navigate('/admin/dashboard/inventory')} className="mt-10 w-full rounded-md border border-white/20 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">
-                View Inventory Map
-              </button>
             </article>
           </section>
         </main>
@@ -501,18 +488,6 @@ const DetailRow = ({ label, value }) => (
   <div className="rounded-lg bg-slate-50 p-4">
     <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{label}</p>
     <p className="mt-2 font-semibold text-slate-950">{value}</p>
-  </div>
-);
-
-const Capacity = ({ label, value }) => (
-  <div>
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-slate-300">{label}</span>
-      <span className="font-bold">{value}%</span>
-    </div>
-    <div className="mt-3 h-1.5 rounded-full bg-white/15">
-      <div className="h-full rounded-full bg-white" style={{ width: `${value}%` }} />
-    </div>
   </div>
 );
 
