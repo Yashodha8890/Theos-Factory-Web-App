@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Download, ImagePlus, ShieldCheck, Trash2, UserRound, X } from 'lucide-react';
+import { ImagePlus, Trash2, UserRound, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import FormInput from '../../components/FormInput';
 import { useAuth } from '../../contexts/AuthContext';
@@ -77,7 +77,7 @@ const ProfileDetails = () => {
         <p className="mt-4 max-w-3xl text-lg leading-8 muted">Manage personal information, security preferences, and event communication settings.</p>
       </section>
 
-      <section className="grid gap-8 xl:grid-cols-[1.35fr_0.65fr]">
+      <section>
         <form onSubmit={handleSubmit} className="card p-6 md:p-10">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <h2 className="display flex items-center gap-4 text-3xl font-bold"><UserRound className="text-accent-600" /> Personal Details</h2>
@@ -114,33 +114,13 @@ const ProfileDetails = () => {
           </div>
           {message && <p className={`mt-6 text-sm font-semibold ${message.includes('success') ? 'text-emerald-600' : 'text-red-500'}`}>{message}</p>}
         </form>
-
-        <aside className="space-y-6">
-          <article className="rounded-lg bg-brand-950 p-8 text-white shadow-lift">
-            <h2 className="display flex items-center gap-3 text-3xl font-bold"><ShieldCheck className="text-accent-400" /> Security</h2>
-            <div className="mt-8 space-y-4">
-              <div className="rounded-md bg-white/10 p-5">Update Password</div>
-              <div className="rounded-md bg-white/10 p-5">Two-Factor Auth <span className="float-right rounded bg-accent-500 px-2 py-1 text-xs font-bold text-brand-950">Enabled</span></div>
-              <div className="rounded-md bg-white/10 p-5">Login Activity</div>
-            </div>
-          </article>
-          <article className="card p-8">
-            <h2 className="display text-2xl font-bold">Concierge Preferences</h2>
-            <label className="mt-8 flex items-center justify-between">
-              <span><strong>SMS Notifications</strong><span className="block text-sm muted">Real-time event updates</span></span>
-              <input type="checkbox" defaultChecked className="h-6 w-11 rounded-full p-0" />
-            </label>
-          </article>
-        </aside>
       </section>
 
       <section className="card flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="display text-3xl font-bold">Privacy & Data</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 muted">Download a complete archive of your event history or manage account status.</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="btn-outline"><Download size={16} /> Download Data</button>
           <Link to="/dashboard/delete" className="btn bg-red-600 text-white hover:bg-red-700"><Trash2 size={16} /> Delete Account</Link>
         </div>
       </section>

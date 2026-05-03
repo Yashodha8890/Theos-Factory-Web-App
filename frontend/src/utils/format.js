@@ -6,8 +6,10 @@ export const formatDate = (value) => {
 };
 
 export const formatCurrency = (value) => (
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value || 0))
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(Number(value || 0))
 );
+
+export const formatBudgetRange = (value) => String(value || '').replace(/\$/g, '€');
 
 export const getErrorMessage = (error, fallback = 'Something went wrong') => (
   error?.response?.data?.message || error?.message || fallback

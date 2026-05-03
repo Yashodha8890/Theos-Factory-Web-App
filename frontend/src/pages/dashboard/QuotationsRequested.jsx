@@ -6,7 +6,7 @@ import EmptyState from '../../components/EmptyState';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { images } from '../../data/siteData';
 import { useAuth } from '../../contexts/AuthContext';
-import { formatDate } from '../../utils/format';
+import { formatBudgetRange, formatDate } from '../../utils/format';
 
 const quoteImages = [images.table, images.ballroom, images.lounge, images.lights];
 
@@ -56,11 +56,6 @@ const QuotationsRequested = () => {
                 <p className="flex justify-between py-4"><span className="muted">Approved</span><strong>{stats.approved}</strong></p>
               </div>
             </article>
-            <article className="overflow-hidden rounded-lg bg-brand-950 p-7 text-white shadow-lift">
-              <h2 className="display text-2xl font-bold">Need a faster response?</h2>
-              <p className="mt-4 text-sm leading-6 text-slate-400">Our premium concierge reviews high-priority requests first.</p>
-              <Link to="/book-appointment" className="btn-accent mt-8 w-full">Schedule Call</Link>
-            </article>
           </aside>
 
           <div className="space-y-6">
@@ -78,7 +73,7 @@ const QuotationsRequested = () => {
                     <p className="mt-2 text-sm muted">{quote.guestCount} guests · {quote.serviceCategory}</p>
                   </div>
                   <div className="text-left md:text-right">
-                    <p className="display text-3xl font-bold">{quote.budgetRange}</p>
+                    <p className="display text-3xl font-bold">{formatBudgetRange(quote.budgetRange)}</p>
                     <p className="mt-1 text-sm muted">Budget Range</p>
                     <Link to="/request-quotation" className="btn-primary mt-5">Edit Request</Link>
                   </div>

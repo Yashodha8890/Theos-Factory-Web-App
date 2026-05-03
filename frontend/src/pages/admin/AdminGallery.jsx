@@ -45,7 +45,7 @@ const sidebarItems = [
   { label: 'User Accounts', icon: Users, path: '/admin/dashboard/users' },
 ];
 
-const categoryOptions = ['Wedding', 'Corporate', 'Private', 'Gala', 'Decoration', 'Rentals', 'Exhibition'];
+const categoryOptions = ['Wedding', 'Corporate', 'Private', 'Decoration', 'Rentals'];
 const statusOptions = ['All', 'Public', 'Private'];
 const maxImageSize = 1.5 * 1024 * 1024;
 

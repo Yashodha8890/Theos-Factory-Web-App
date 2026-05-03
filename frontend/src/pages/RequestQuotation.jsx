@@ -8,15 +8,16 @@ import { company, images } from '../data/siteData';
 import { getErrorMessage } from '../utils/format';
 
 const initialForm = {
-  eventType: 'Corporate Gala',
+  eventType: 'Wedding',
   eventDate: '',
   guestCount: '',
-  budgetRange: '$25k - $50k',
+  budgetRange: '€25k - €50k',
   serviceCategory: 'Decoration, Planning, Rentals',
   notes: '',
 };
 
 const serviceOptions = ['Decoration', 'Planning', 'Rentals'];
+const eventTypeOptions = ['Wedding', 'Private Party', 'Birthday Celebrations'];
 
 const RequestQuotation = () => {
   const { user, token } = useAuth();
@@ -99,11 +100,9 @@ const RequestQuotation = () => {
             </div>
             <div className="mt-8 grid gap-5 md:grid-cols-2">
               <FormInput label="Event Type" name="eventType" as="select" value={form.eventType} onChange={handleChange} error={errors.eventType} required>
-                <option>Corporate Gala</option>
-                <option>Wedding</option>
-                <option>Private Dinner</option>
-                <option>Birthday Celebration</option>
-                <option>Product Launch</option>
+                {eventTypeOptions.map((eventType) => (
+                  <option key={eventType} value={eventType}>{eventType}</option>
+                ))}
               </FormInput>
               <FormInput label="Preferred Date" type="date" name="eventDate" value={form.eventDate} onChange={handleChange} error={errors.eventDate} required />
               <FormInput label="Guest Count" name="guestCount" placeholder="Estimated attendance" value={form.guestCount} onChange={handleChange} error={errors.guestCount} required />
@@ -141,10 +140,10 @@ const RequestQuotation = () => {
               <FormInput label="Full Name" value={user?.name || ''} placeholder="Sign in to attach your name" readOnly />
               <FormInput label="Email Address" value={user?.email || ''} placeholder="Sign in to attach your email" readOnly />
               <FormInput label="Budget Range" name="budgetRange" as="select" value={form.budgetRange} onChange={handleChange} error={errors.budgetRange} required>
-                <option>$10k - $25k</option>
-                <option>$25k - $50k</option>
-                <option>$50k - $100k</option>
-                <option>$100k+</option>
+                <option>€10k - €25k</option>
+                <option>€25k - €50k</option>
+                <option>€50k - €100k</option>
+                <option>€100k+</option>
               </FormInput>
               <FormInput label="Project Notes" name="notes" as="textarea" rows="4" className="md:col-span-2" value={form.notes} onChange={handleChange} placeholder="Tell us about your atmosphere, venue, theme, and must-have details..." />
             </div>

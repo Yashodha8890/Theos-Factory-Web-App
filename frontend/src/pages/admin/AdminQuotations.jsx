@@ -32,7 +32,7 @@ import {
 import AdminNotificationBell from '../../components/AdminNotificationBell';
 import Modal from '../../components/Modal';
 import { company } from '../../data/siteData';
-import { formatDate, formatNumber, getErrorMessage } from '../../utils/format';
+import { formatBudgetRange, formatDate, formatNumber, getErrorMessage } from '../../utils/format';
 
 const sidebarItems = [
   { label: 'Dashboard', icon: Grid2X2, path: '/admin/dashboard' },
@@ -207,7 +207,7 @@ const AdminQuotations = () => {
         quotation.serviceCategory || '',
         quotation.eventDate || '',
         quotation.guestCount || '',
-        quotation.budgetRange || '',
+        formatBudgetRange(quotation.budgetRange),
         displayQuotationStatus(quotation.status),
         formatDate(quotation.createdAt),
         quotation.notes || '',
@@ -440,7 +440,7 @@ const AdminQuotations = () => {
                       </td>
                       <td className="px-6 py-5">
                         <p className="font-semibold text-slate-800">{quotation.guestCount || '-'} guests</p>
-                        <p className="mt-1 text-xs text-slate-500">{quotation.budgetRange || 'No budget range'}</p>
+                        <p className="mt-1 text-xs text-slate-500">{quotation.budgetRange ? formatBudgetRange(quotation.budgetRange) : 'No budget range'}</p>
                       </td>
                       <td className="px-6 py-5">
                         <span className={`rounded-full px-4 py-2 text-[11px] font-bold uppercase tracking-[0.08em] ring-1 ${statusPillClasses[displayQuotationStatus(quotation.status)] || statusPillClasses['Pending Review']}`}>
@@ -581,7 +581,7 @@ const AdminQuotations = () => {
               </div>
               <div className="rounded-lg border border-slate-100 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Budget Range</p>
-                <p className="mt-2 font-semibold text-slate-900">{manageTarget.budgetRange || '-'}</p>
+                <p className="mt-2 font-semibold text-slate-900">{manageTarget.budgetRange ? formatBudgetRange(manageTarget.budgetRange) : '-'}</p>
               </div>
               <div className="rounded-lg border border-slate-100 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Submitted</p>
