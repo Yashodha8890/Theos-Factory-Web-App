@@ -13,10 +13,15 @@ export const getErrorMessage = (error, fallback = 'Something went wrong') => (
   error?.response?.data?.message || error?.message || fallback
 );
 
-export const splitName = (name = '') => {
-  const parts = name.trim().split(' ').filter(Boolean);
+export const splitName = (value = '') => {
+  const parts = String(value).trim().split(/\s+/).filter(Boolean);
+
   return {
     firstName: parts[0] || '',
     lastName: parts.slice(1).join(' '),
   };
 };
+
+export const formatNumber = (value) => (
+  new Intl.NumberFormat('en-US').format(Number(value || 0))
+);

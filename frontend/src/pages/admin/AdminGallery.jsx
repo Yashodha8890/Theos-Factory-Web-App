@@ -41,7 +41,7 @@ const sidebarItems = [
   { label: 'Inventory Orders', icon: ShoppingCart, path: '/admin/dashboard/orders' },
   { label: 'Manage Gallery', icon: Images, path: '/admin/dashboard/gallery', active: true },
   { label: 'Appointments', icon: CalendarDays, path: '/admin/dashboard/bookings' },
-  { label: 'Quotations', icon: FileText },
+  { label: 'Quotations', icon: FileText, path: '/admin/dashboard/quotations' },
   { label: 'User Accounts', icon: Users, path: '/admin/dashboard/users' },
 ];
 

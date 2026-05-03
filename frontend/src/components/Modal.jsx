@@ -1,8 +1,18 @@
 import { X } from 'lucide-react';
 
-const Modal = ({ title, message, onConfirm, onCancel, confirmText = 'Confirm', cancelText = 'Cancel', danger = false, children }) => (
+const Modal = ({
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+  danger = false,
+  children,
+  maxWidth = 'max-w-md',
+}) => (
   <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-5 backdrop-blur-sm">
-    <section className="card w-full max-w-md p-6 shadow-lift">
+    <section className={`card w-full ${maxWidth} p-6 shadow-lift`}>
       <div className="flex items-start justify-between gap-6">
         <div>
           <h2 className="display text-2xl font-bold">{title}</h2>

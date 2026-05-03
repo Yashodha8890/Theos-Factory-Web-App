@@ -128,3 +128,18 @@ export const updateAdminUser = async (token, id, data) => {
   });
   return response.data;
 };
+
+export const getAdminQuotations = async (token, params = {}) => {
+  const response = await axiosClient.get('/admin/quotations', {
+    params,
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateAdminQuotationStatus = async (token, id, status) => {
+  const response = await axiosClient.patch(`/admin/quotations/${id}/status`, { status }, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};

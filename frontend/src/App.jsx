@@ -29,6 +29,7 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminGallery from './pages/admin/AdminGallery';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminQuotations from './pages/admin/AdminQuotations';
 
 const withPublic = (element) => <PublicLayout>{element}</PublicLayout>;
 
@@ -64,6 +65,7 @@ function App() {
       <Route path="/admin/dashboard/orders" element={withAdmin(<AdminOrders />)} />
       <Route path="/admin/dashboard/gallery" element={withAdmin(<AdminGallery />)} />
       <Route path="/admin/dashboard/bookings" element={withAdmin(<AdminBookings />)} />
+      <Route path="/admin/dashboard/quotations" element={withAdmin(<AdminQuotations />)} />
       <Route path="/admin/dashboard/users" element={withAdmin(<AdminUsers />)} />
       <Route path="/dashboard" element={withDashboard(<DashboardOverview />, 'Overview')} />
       <Route path="/dashboard/profile" element={withDashboard(<MyProfile />, 'My Profile')} />

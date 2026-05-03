@@ -28,7 +28,7 @@ const sidebarItems = [
   { label: 'Inventory Orders', icon: ShoppingCart, path: '/admin/dashboard/orders' },
   { label: 'Manage Gallery', icon: Images, path: '/admin/dashboard/gallery' },
   { label: 'Appointments', icon: CalendarDays, path: '/admin/dashboard/bookings' },
-  { label: 'Quotations', icon: FileText },
+  { label: 'Quotations', icon: FileText, path: '/admin/dashboard/quotations' },
   { label: 'User Accounts', icon: Users, path: '/admin/dashboard/users' },
 ];
 
@@ -130,7 +130,7 @@ const AdminDashboard = () => {
   const rentalCount = counts.activeRentalBookings ?? counts.rentalBookings ?? 0;
 
   const stats = [
-    ['TOTAL USERS', counts.users ?? 0, Users, '+12%', 'bg-emerald-50 text-emerald-600'],
+    ['TOTAL USERS', counts.users ?? 0, Users],
     ['QUOTATION REQUESTS', counts.quotations ?? 0, FileText, 'Pending', 'bg-amber-50 text-amber-600'],
     ['APPOINTMENTS', counts.appointments ?? 0, CalendarDays, 'Today', 'bg-slate-100 text-slate-500'],
     [
