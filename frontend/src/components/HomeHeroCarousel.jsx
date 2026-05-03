@@ -86,14 +86,14 @@ const HomeHeroCarousel = () => {
           <aside className="hidden justify-self-end lg:block">
             <div className="w-[360px] rounded-lg border border-white/15 bg-white/10 p-5 shadow-lift backdrop-blur-xl">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent-300">{company.name}</p>
-              <p className="display mt-4 text-2xl italic">"We build rooms people remember before the first speech begins."</p>
+              <p className="display mt-4 text-2xl italic">"We transfer moments into unforgetable moments"</p>
               <div className="mt-8 grid grid-cols-3 gap-3 border-t border-white/15 pt-5 text-center">
                 <div>
                   <p className="display text-2xl font-bold">3</p>
                   <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-slate-300">Services</p>
                 </div>
                 <div>
-                  <p className="display text-2xl font-bold">24h</p>
+                  <p className="display text-2xl font-bold">24/7</p>
                   <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-slate-300">Reply</p>
                 </div>
                 <div>

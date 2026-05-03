@@ -66,7 +66,7 @@ const BookAppointment = () => {
       <section className="container-page py-16">
         <SectionHeader
           eyebrow="Consultation Booking"
-          title="Let's curate your next masterpiece"
+          title="Secure Your Appointment Today"
           copy="Schedule a private consultation with our creative team to discuss your vision, event needs, and service timeline."
         />
 

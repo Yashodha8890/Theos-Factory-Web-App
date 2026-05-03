@@ -30,7 +30,7 @@ const Home = () => {
     <div>
       <HomeHeroCarousel />
 
-      <section className="bg-brand-950 py-20 text-white">
+     {/*  <section className="bg-brand-950 py-20 text-white">
         <div className="container-page grid gap-12 md:grid-cols-[0.6fr_1.4fr]">
           <p className="eyebrow">Our Manifesto</p>
           <div>
@@ -43,13 +43,13 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="border-y bg-brand-950 text-white" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
         <div className="container-page py-16">
           <div className="mb-10 flex items-end justify-between gap-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Services</p>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent-400">Curated Capabilities</p>
+            {/* <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent-400">Curated Capabilities</p> */}
           </div>
           <div className="grid gap-0 md:grid-cols-3">
             {(services.length ? services : serviceHighlights).map((service, index) => (
