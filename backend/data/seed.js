@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 const connectDB = require('../config/db');
-const { services, gallery, rentals, user, demoRecords } = require('./seedData');
+const { services, gallery, rentals, user, adminUser, demoRecords } = require('./seedData');
 const Service = require('../models/Service');
 const GalleryItem = require('../models/GalleryItem');
 const RentalItem = require('../models/RentalItem');
@@ -27,8 +27,12 @@ const seed = async () => {
       RentalBooking.deleteMany({}),
     ]);
 
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const [hashedPassword, hashedAdminPassword] = await Promise.all([
+      bcrypt.hash(user.password, 10),
+      bcrypt.hash(adminUser.password, 10),
+    ]);
     const demoUser = await User.create({ ...user, password: hashedPassword });
+    await User.create({ ...adminUser, password: hashedAdminPassword });
     await Service.insertMany(services);
     await GalleryItem.insertMany(gallery);
     const insertedRentals = await RentalItem.insertMany(rentals);

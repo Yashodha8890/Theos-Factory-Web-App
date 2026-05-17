@@ -111,10 +111,10 @@ export const publicGalleryFallback = [
   },
   {
     _id: 'gallery-3',
-    title: 'Gala Dinner',
-    category: 'Gala',
+    title: 'Chandelier Rental Styling',
+    category: 'Rentals',
     image: images.chandeliers,
-    description: 'A chandelier-led room with high-contrast black and gold details.',
+    description: 'Statement lighting and rental-led styling arranged for a formal reception.',
   },
   {
     _id: 'gallery-4',

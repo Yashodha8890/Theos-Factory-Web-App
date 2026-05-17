@@ -4,7 +4,14 @@ import { getGalleryItems } from '../api/gallery';
 import SectionHeader from '../components/SectionHeader';
 import { publicGalleryFallback } from '../data/siteData';
 
-const categories = ['All', 'Wedding', 'Corporate', 'Private', 'Gala', 'Decoration', 'Rentals'];
+const categories = ['All', 'Wedding', 'Corporate', 'Private', 'Decoration', 'Rentals'];
+const galleryTypes = categories.slice(1);
+
+const normalizeGalleryType = (value) => {
+  if (galleryTypes.includes(value)) return value;
+  if (value === 'Gala' || value === 'Exhibition') return 'Decoration';
+  return 'Decoration';
+};
 
 const Gallery = () => {
   const [items, setItems] = useState(publicGalleryFallback);
@@ -17,7 +24,7 @@ const Gallery = () => {
   }, []);
 
   const filtered = useMemo(() => (
-    category === 'All' ? items : items.filter((item) => item.category === category)
+    category === 'All' ? items : items.filter((item) => normalizeGalleryType(item.category) === category)
   ), [category, items]);
 
   return (
@@ -47,7 +54,7 @@ const Gallery = () => {
             <article key={item._id || item.title} className="mb-7 break-inside-avoid overflow-hidden rounded-lg bg-brand-950 shadow-soft">
               <img src={item.image} alt={item.title} className={`w-full object-cover ${index % 3 === 0 ? 'h-[520px]' : 'h-[360px]'}`} />
               <div className="p-5 text-white">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-accent-300">{item.category}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-accent-300">{normalizeGalleryType(item.category)}</p>
                 <h3 className="display mt-2 text-2xl font-bold">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-400">{item.description}</p>
               </div>

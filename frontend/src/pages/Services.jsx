@@ -86,7 +86,7 @@ const Services = () => {
               <div key={item} className="flex gap-3"><Gem size={17} className="text-accent-600" /><span>{item}</span></div>
             ))}
           </div>
-          <Link to="/rentals" className="btn-accent mt-8">View Inventory Catalog <Sparkles size={16} /></Link>
+          <Link to="/rentals" className="btn-accent mt-8">View Inventory Catalog</Link>
         </div>
       </section>
 

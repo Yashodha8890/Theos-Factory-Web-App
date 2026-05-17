@@ -45,7 +45,7 @@ module.exports = {
     },
     {
       title: 'Grand Chandelier Reception',
-      category: 'Gala',
+      category: 'Decoration',
       image: chandelierImage,
       description: 'A dramatic ballroom setup with suspended lighting and refined table spacing.',
     },
@@ -131,6 +131,15 @@ module.exports = {
     phone: '041 5705471',
     avatar: 'https://api.dicebear.com/8.x/avataaars/svg?seed=Avery',
   },
+  adminUser: {
+    name: 'Theo Admin',
+    email: 'admin@theosfactory.com',
+    password: 'AdminPass123',
+    phone: '041 5705471',
+    role: 'admin',
+    status: 'Active',
+    avatar: 'https://api.dicebear.com/8.x/initials/svg?seed=TF',
+  },
   demoRecords: {
     appointments: [
       {
@@ -153,7 +162,7 @@ module.exports = {
         eventType: 'Corporate Gala',
         eventDate: '2026-07-18',
         guestCount: '220',
-        budgetRange: '$25k - $50k',
+        budgetRange: '€25k - €50k',
         serviceCategory: 'Decoration, Planning, Rentals',
         notes: 'A premium black, blue, and metallic gala environment with lounge areas and a photo focal point.',
         status: 'Approved',
@@ -162,7 +171,7 @@ module.exports = {
         eventType: 'Private Dinner',
         eventDate: '2026-08-12',
         guestCount: '48',
-        budgetRange: '$10k - $25k',
+        budgetRange: '€10k - €25k',
         serviceCategory: 'Decoration',
         notes: 'Intimate candlelit dinner with floral installations and refined table styling.',
         status: 'Pending Review',

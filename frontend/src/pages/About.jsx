@@ -9,7 +9,25 @@ const values = [
   { title: 'Trust', icon: ShieldCheck, copy: 'Clear communication, careful planning, and discretion define the client experience.' },
 ];
 
-const team = ['Julian Thorne', 'Elena Moretti', 'Marcus Chen', 'Sophia Valmont'];
+const ownersImage = '/images/owners.jpg';
+const founderImage = '/images/founder-2.jpg';
+const team = [
+  {
+    name: "Theo's Founders",
+    role: 'Founder',
+    image: ownersImage,
+  },
+  {
+    name: "Theo's Founder",
+    role: 'Founder',
+    image: founderImage,
+  },
+];
+
+const handleOwnersImageError = (event) => {
+  event.currentTarget.onerror = null;
+  event.currentTarget.src = images.venue;
+};
 
 const About = () => (
   <div>
@@ -25,9 +43,6 @@ const About = () => (
       </div>
       <div className="relative">
         <img src={images.table} alt="Luxury event table setting" className="aspect-[4/5] w-full rounded-lg object-cover shadow-lift lg:aspect-[5/4]" />
-        <div className="card absolute -bottom-8 left-6 hidden w-40 p-3 md:block">
-          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=80" alt="Event director" className="aspect-square rounded-md object-cover" />
-        </div>
       </div>
     </section>
 
@@ -49,22 +64,54 @@ const About = () => (
       ))}
     </section>
 
-    <section className="container-page py-20">
-      <div className="mb-10 grid gap-6 md:grid-cols-[1fr_0.8fr] md:items-end">
-        <div>
+    <section className="py-20" style={{ background: 'var(--surface-soft)' }}>
+      <div className="container-page grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+        <div className="lg:sticky lg:top-24">
           <p className="eyebrow">The Architects</p>
-          <h2 className="display mt-4 max-w-xl text-4xl font-bold">Meet the visionaries behind the scenes.</h2>
+          <h2 className="display mt-4 max-w-xl text-4xl font-bold leading-tight md:text-5xl">
+            Meet the visionaries behind the scenes.
+          </h2>
+          <p className="mt-6 max-w-xl text-base leading-8 muted">
+            Our leadership team combines decades of event production, decor direction, and client service.
+          </p>
+          <div className="mt-8 h-px w-20 bg-accent-500" />
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            {['Event production', 'Decor direction', 'Client service', 'Hands-on setup'].map((item) => (
+              <div key={item} className="flex items-center gap-3 text-sm font-semibold">
+                <span className="h-2 w-2 rounded-full bg-accent-500" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <p className="text-sm leading-6 muted">Our leadership team combines decades of event production, decor direction, and client service.</p>
-      </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {team.map((name, index) => (
-          <article key={name}>
-            <img src={`https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=${encodeURIComponent(name)}`} alt={name} className="aspect-[4/5] w-full rounded-lg bg-brand-950 object-cover p-3" />
-            <h3 className="mt-4 font-semibold">{name}</h3>
-            <p className="mt-1 text-xs uppercase tracking-[0.18em] muted">{index === 0 ? 'Founder' : 'Creative Director'}</p>
-          </article>
-        ))}
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          {team.map(({ name, role, image }, index) => (
+            <article
+              key={name}
+              className={`group overflow-hidden rounded-lg border shadow-soft ${index === 1 ? 'sm:mt-10' : ''}`}
+              style={{ background: 'var(--surface)', borderColor: 'var(--line)' }}
+            >
+              <div className="relative overflow-hidden bg-brand-950">
+                <img
+                  src={image}
+                  onError={handleOwnersImageError}
+                  alt={name}
+                  className="aspect-[3/4] w-full object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent p-5 text-white">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent-300">{role}</p>
+                </div>
+              </div>
+              <div className="p-5">
+                <h3 className="display text-2xl font-bold">{name}</h3>
+                <p className="mt-3 text-sm leading-6 muted">
+                  Owner-led creative direction with a close eye on guest experience, styling, and event flow.
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
 

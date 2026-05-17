@@ -33,6 +33,28 @@
   }
 }
 
+@keyframes chatbot-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@keyframes chatbot-pulse-ring {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.12;
+    transform: scale(1.35);
+  }
+}
+
 :root {
   --bg: #faf9f9;
   --surface: #ffffff;
@@ -166,12 +188,22 @@
     animation: hero-progress 6200ms linear both;
     transform-origin: left;
   }
+
+  .animate-chatbot-float {
+    animation: chatbot-float 2.6s ease-in-out infinite;
+  }
+
+  .animate-chatbot-pulse-ring {
+    animation: chatbot-pulse-ring 2.2s ease-in-out infinite;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-kenburns,
   .animate-hero-text-in,
-  .animate-hero-progress {
+  .animate-hero-progress,
+  .animate-chatbot-float,
+  .animate-chatbot-pulse-ring {
     animation: none;
   }
 }

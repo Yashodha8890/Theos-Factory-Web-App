@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const rentalItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  sku: { type: String, trim: true },
   category: { type: String, required: true },
   image: { type: String },
   description: { type: String },

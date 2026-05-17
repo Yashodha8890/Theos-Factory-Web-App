@@ -5,6 +5,8 @@ const User = require('../models/User');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
+const defaultAdminEmail = 'admin@theosfactory.com';
+const isDefaultAdminUser = (user) => user?.email?.toLowerCase() === defaultAdminEmail;
 
 const buildUserResponse = (user) => ({
   id: user._id,
@@ -13,6 +15,7 @@ const buildUserResponse = (user) => ({
   phone: user.phone,
   avatar: user.avatar,
   role: user.role,
+  status: user.status || 'Active',
   createdAt: user.createdAt,
 });
 
@@ -48,6 +51,35 @@ router.post('/login', async (req, res) => {
   const user = await User.findOne({ email: email.toLowerCase() });
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ message: 'Invalid email or password' });
+  }
+  if (['Suspended', 'Pending'].includes(user.status)) {
+    return res.status(403).json({ message: 'This account is not active' });
+  }
+
+  const token = signToken(user);
+  res.json({ token, user: buildUserResponse(user) });
+});
+
+router.post('/admin/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and security key are required' });
+  }
+
+  const user = await User.findOne({ email: email.toLowerCase() });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ message: 'Invalid admin credentials' });
+  }
+
+  if (user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access is restricted to authorized personnel' });
+  }
+  if (isDefaultAdminUser(user) && user.status !== 'Active') {
+    user.status = 'Active';
+    await user.save();
+  }
+  if (['Suspended', 'Pending'].includes(user.status)) {
+    return res.status(403).json({ message: 'This admin account is not active' });
   }
 
   const token = signToken(user);

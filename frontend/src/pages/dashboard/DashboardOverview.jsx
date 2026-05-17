@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, CalendarDays, FileText, ShoppingBag } from 'lucide-react';
+import { CalendarDays, FileText, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getMyAppointments } from '../../api/appointments';
 import { getMyQuotations } from '../../api/quotations';
@@ -60,7 +60,6 @@ const DashboardOverview = () => {
             Your event planning workspace is active. Review upcoming appointments, rental bookings, and quotation progress below.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/request-quotation" className="btn-accent">Request New Event <ArrowRight size={16} /></Link>
             <Link to="/gallery" className="btn-outline border-white/20 text-white hover:bg-white hover:text-brand-950">View Gallery</Link>
           </div>
         </div>

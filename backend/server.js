@@ -9,6 +9,7 @@ const appointmentRoutes = require('./routes/appointments');
 const quotationRoutes = require('./routes/quotations');
 const rentalRoutes = require('./routes/rentals');
 const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
 const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
@@ -21,7 +22,7 @@ app.use(cors({
   origin: process.env.CLIENT_URL || '*',
   credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
@@ -30,6 +31,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/quotations', quotationRoutes);
 app.use('/api/rentals', rentalRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Theo\u2019s Factory backend is running.' });
