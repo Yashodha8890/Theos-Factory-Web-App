@@ -10,6 +10,7 @@ const quotationRoutes = require('./routes/quotations');
 const rentalRoutes = require('./routes/rentals');
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
+const chatbotRoutes = require('./routes/chatbot');
 const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
@@ -32,6 +33,7 @@ app.use('/api/quotations', quotationRoutes);
 app.use('/api/rentals', rentalRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Theo\u2019s Factory backend is running.' });

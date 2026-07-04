@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { RotateCcw, Send, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { sendChatbotMessage } from '../api/chatbot';
 import { chatbotQuickPrompts, createLocalChatbotReply } from '../data/chatbotKnowledge';
 
 const robotIconUrl = 'https://cdn-icons-png.flaticon.com/128/18355/18355220.png';
@@ -12,6 +13,14 @@ const makeMessage = (role, payload) => ({
   ...payload,
 });
 
+const toChatHistory = (messages) => messages
+  .filter((message) => message.text && (message.role === 'user' || message.role === 'bot'))
+  .slice(-8)
+  .map((message) => ({
+    role: message.role === 'bot' ? 'assistant' : 'user',
+    content: message.text,
+  }));
+
 const ChatbotWidget = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,6 +28,7 @@ const ChatbotWidget = () => {
   const hidden = location.pathname.startsWith('/admin');
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const [messages, setMessages] = useState(() => [
     makeMessage('bot', createLocalChatbotReply('', user)),
   ]);
@@ -34,18 +44,45 @@ const ChatbotWidget = () => {
     }
   }, [messages, open]);
 
-  const sendMessage = (value) => {
+  const sendMessage = async (value) => {
     const content = value.trim();
-    if (!content) return;
+    if (!content || isSending) return;
 
-    const reply = createLocalChatbotReply(content, user);
-    setMessages((current) => [
-      ...current,
-      makeMessage('user', { text: content }),
-      makeMessage('bot', reply),
-    ]);
+    const localReply = createLocalChatbotReply(content, user);
+    const history = toChatHistory(messages);
+
+    setMessages((current) => [...current, makeMessage('user', { text: content })]);
     setDraft('');
     setOpen(true);
+    setIsSending(true);
+
+    try {
+      const data = await sendChatbotMessage({
+        message: content,
+        history,
+        path: location.pathname,
+        userName: user?.name || '',
+      });
+
+      setMessages((current) => [
+        ...current,
+        makeMessage('bot', {
+          text: data.reply,
+          actions: localReply.actions,
+        }),
+      ]);
+    } catch (error) {
+      console.error('Chatbot AI request failed:', error);
+      setMessages((current) => [
+        ...current,
+        makeMessage('bot', {
+          ...localReply,
+          text: `The AI assistant is unavailable right now. ${localReply.text}`,
+        }),
+      ]);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleSubmit = (event) => {
@@ -68,6 +105,7 @@ const ChatbotWidget = () => {
   const resetChat = () => {
     setMessages([makeMessage('bot', createLocalChatbotReply('', user))]);
     setDraft('');
+    setIsSending(false);
   };
 
   if (hidden) return null;
@@ -84,7 +122,7 @@ const ChatbotWidget = () => {
               </span>
               <div>
                 <h2 className="text-sm font-bold">Theo Assistant</h2>
-                <p className="mt-1 text-xs text-slate-300">Local event help</p>
+                <p className="mt-1 text-xs text-slate-300">{isSending ? 'Thinking...' : 'General AI help'}</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -116,7 +154,7 @@ const ChatbotWidget = () => {
                     : 'border border-slate-200 bg-white text-slate-700'
                 }`}
                 >
-                  <p>{message.text}</p>
+                  <p className="whitespace-pre-line">{message.text}</p>
                   {message.bullets?.length > 0 && (
                     <ul className="mt-3 space-y-2">
                       {message.bullets.map((bullet) => (
@@ -144,6 +182,13 @@ const ChatbotWidget = () => {
                 </div>
               </article>
             ))}
+            {isSending && (
+              <article className="flex justify-start">
+                <div className="max-w-[88%] rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-500 shadow-sm">
+                  <p>Thinking...</p>
+                </div>
+              </article>
+            )}
           </div>
 
           <div className="border-t border-slate-100 bg-white p-4">
@@ -153,7 +198,8 @@ const ChatbotWidget = () => {
                   key={prompt}
                   type="button"
                   onClick={() => sendMessage(prompt)}
-                  className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-accent-50 hover:text-accent-700"
+                  disabled={isSending}
+                  className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-accent-50 hover:text-accent-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {prompt}
                 </button>
@@ -164,11 +210,12 @@ const ChatbotWidget = () => {
                 type="text"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                placeholder="Ask about services, quotes, rentals..."
+                placeholder="Ask anything..."
                 className="h-11 rounded-md border-slate-200 bg-white py-0 text-sm text-slate-950 placeholder:text-slate-400"
                 aria-label="Chat message"
+                disabled={isSending}
               />
-              <button type="submit" className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-brand-950 text-white hover:bg-black" aria-label="Send message">
+              <button type="submit" disabled={isSending} className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-brand-950 text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-60" aria-label="Send message">
                 <Send size={17} />
               </button>
             </form>

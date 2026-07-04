@@ -12,6 +12,7 @@ const galleryCategories = [...new Set(publicGalleryFallback.map((item) => item.c
 
 export const chatbotQuickPrompts = [
   'What services do you offer?',
+  'What is the highest mountain?',
   'How do I request a quote?',
   'Show rental options',
   'How can I contact you?',
@@ -46,7 +47,7 @@ export const createLocalChatbotReply = (rawInput, user) => {
 
   if (!input || hasAny(input, ['hello', 'hi', 'hey', 'start'])) {
     return makeReply({
-      text: `Hi${user?.name ? ` ${user.name.split(' ')[0]}` : ''}. I can help with ${company.name} services, quotations, bookings, rentals, gallery details, and contact information.`,
+      text: `Hi${user?.name ? ` ${user.name.split(' ')[0]}` : ''}. I can answer general questions when the local AI model is running, and I can always help with ${company.name} services, quotations, bookings, rentals, gallery details, and contact information.`,
       bullets: [
         `Services: ${serviceNames}.`,
         `Rental categories: ${rentalCategories.join(', ')}.`,
@@ -56,6 +57,12 @@ export const createLocalChatbotReply = (rawInput, user) => {
         { label: 'View Services', to: '/services' },
         { label: 'Request Quote', to: '/request-quotation' },
       ],
+    });
+  }
+
+  if (hasAny(input, ['highest mountain', 'tallest mountain', 'mount everest', 'everest'])) {
+    return makeReply({
+      text: 'The highest mountain above sea level is Mount Everest, at about 8,849 meters or 29,032 feet.',
     });
   }
 
