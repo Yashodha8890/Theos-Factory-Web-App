@@ -249,7 +249,7 @@ const AdminBookings = () => {
               <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-sm uppercase tracking-[0.18em] text-accent-800">Pending Requests</p>
-                  <h1 className="display mt-4 text-4xl font-bold leading-tight md:text-5xl">Booking Management</h1>
+                  <h1 className="display mt-4 text-4xl font-bold leading-tight md:text-5xl">Appointment Management</h1>
                   <p className="mt-3 text-sm text-slate-600">
                     Review appointment requests, approve client meetings, and reschedule consultation slots.
                   </p>

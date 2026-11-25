@@ -28,7 +28,7 @@ const Signup = () => {
     setLoading(true);
     try {
       await signUp(form);
-      navigate('/dashboard');
+      navigate('/signin');
     } catch (err) {
       setError(getErrorMessage(err, 'Sign up failed'));
     } finally {
